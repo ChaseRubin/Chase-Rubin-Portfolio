@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chase Rubin — Engineering Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-base:#0B1E33;
+    --navy-surface:#0F2540;
+    --grid-line:#1E3A5F;
+    --grid-line-soft:#16304F;
+    --text-primary:#E8EDF2;
+    --text-secondary:#8CA3BE;
+    --accent:#FF6B35;
+    --accent-cyan:#4ECDC4;
+    --border:#2A4970;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--navy-base);
+    background-image:
+      linear-gradient(var(--grid-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line-soft) 1px, transparent 1px);
+    background-size:32px 32px;
+    color:var(--text-primary);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;}
+
+  ::selection{background:var(--accent);color:var(--navy-base);}
+
+  :focus-visible{
+    outline:2px solid var(--accent-cyan);
+    outline-offset:3px;
+  }
+
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  /* ---------- corner crop marks, reused on cards & hero ---------- */
+  .crop{position:relative;}
+  .crop::before,.crop::after,
+  .crop .cr-tr,.crop .cr-bl{
+    content:"";
+    position:absolute;
+    width:14px;height:14px;
+    border-color:var(--border);
+    border-style:solid;
+    opacity:.7;
+  }
+  .crop::before{top:-1px;left:-1px;border-width:1.5px 0 0 1.5px;}
+  .crop .cr-tr{top:-1px;right:-1px;border-width:1.5px 1.5px 0 0;}
+  .crop::after{bottom:-1px;left:-1px;border-width:0 0 1.5px 1.5px;}
+  .crop .cr-bl{bottom:-1px;right:-1px;border-width:0 1.5px 1.5px 0;}
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:20px 6vw;
+    background:rgba(11,30,51,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--grid-line);
+  }
+  .logo{
+    font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;
+    letter-spacing:0.02em;
+  }
+  .logo span{color:var(--accent);}
+  nav ul{display:flex;gap:32px;list-style:none;}
+  nav a{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-decoration:none;color:var(--text-secondary);
+    letter-spacing:.08em;text-transform:uppercase;
+    transition:color .15s ease;
+  }
+  nav a:hover{color:var(--accent-cyan);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:min(14vh,120px) 6vw 90px;
+    max-width:1200px;margin:0 auto;
+    position:relative;
+  }
+  .hero-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:var(--accent-cyan);letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid var(--border);padding:6px 12px;border-radius:2px;
+    margin-bottom:28px;
+  }
+  .hero-tag::before{content:"";width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;}
+
+  .hero h1{
+    font-family:'Archivo',sans-serif;font-weight:800;
+    font-size:clamp(2.6rem,7vw,5.2rem);
+    line-height:0.98;letter-spacing:-0.02em;
+    max-width:16ch;
+  }
+  .hero h1 em{
+    font-style:normal;color:var(--accent);
+  }
+
+  .hero-sub{
+    margin-top:28px;max-width:52ch;
+    font-size:clamp(1rem,1.6vw,1.2rem);
+    color:var(--text-secondary);
+  }
+
+  .hero-meta{
+    display:flex;flex-wrap:wrap;gap:0;
+    margin-top:56px;
+    border-top:1px solid var(--grid-line);
+    border-left:1px solid var(--grid-line);
+  }
+  .hero-meta div{
+    flex:1 1 160px;
+    padding:16px 20px;
+    border-right:1px solid var(--grid-line);
+    border-bottom:1px solid var(--grid-line);
+  }
+  .hero-meta .label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    color:var(--text-secondary);letter-spacing:.08em;text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .hero-meta .value{font-size:14.5px;font-weight:500;}
+
+  /* ---------- section headers ---------- */
+  .section{padding:70px 6vw;max-width:1200px;margin:0 auto;}
+  .section-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:44px;flex-wrap:wrap;gap:16px;
+    border-bottom:1px solid var(--grid-line);
+    padding-bottom:18px;
+  }
+  .section-num{
+    font-family:'JetBrains Mono',monospace;color:var(--accent);
+    font-size:13px;letter-spacing:.1em;
+  }
+  .section-head h2{
+    font-family:'Archivo',sans-serif;font-weight:700;
+    font-size:clamp(1.5rem,3vw,2.1rem);
+    margin-top:6px;
+  }
+  .section-head p{
+    color:var(--text-secondary);font-size:14px;max-width:34ch;text-align:right;
+  }
+
+  /* ---------- project cards (spec-sheet style) ---------- */
+  .projects-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:28px;
+  }
+  .proj-card{
+    background:var(--navy-surface);
+    border:1px solid var(--border);
+    padding:26px 26px 22px;
+    display:flex;flex-direction:column;gap:16px;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .proj-card:hover{transform:translateY(-3px);border-color:var(--accent-cyan);}
+
+  .proj-topline{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-secondary);
+    letter-spacing:.05em;
+  }
+  .proj-topline .dwg{color:var(--accent);}
+
+  .proj-card h3{
+    font-family:'Archivo',sans-serif;font-weight:700;font-size:1.25rem;
+  }
+
+  .proj-course{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--accent-cyan);letter-spacing:.03em;margin-top:-6px;
+  }
+
+  .proj-desc{color:var(--text-secondary);font-size:14px;}
+
+  .proj-dims{
+    display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-cyan);
+    padding:10px 0;border-top:1px dashed var(--grid-line);border-bottom:1px dashed var(--grid-line);
+  }
+  .proj-dims .arrow{color:var(--border);}
+
+  .proj-stack{
+    display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .proj-stack span{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;
+    color:var(--text-secondary);
+    border:1px solid var(--border);
+    padding:3px 9px;border-radius:2px;
+  }
+
+  .proj-links{display:flex;gap:18px;margin-top:auto;padding-top:6px;}
+  .proj-links a{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-decoration:none;color:var(--text-primary);
+    display:flex;align-items:center;gap:6px;
+    border-bottom:1px solid var(--accent);padding-bottom:2px;
+    transition:color .15s ease;
+  }
+  .proj-links a:hover{color:var(--accent);}
+
+  /* ---------- skills strip ---------- */
+  .skills-strip{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1px;background:var(--grid-line);
+    border:1px solid var(--grid-line);
+  }
+  .skill-block{background:var(--navy-base);padding:24px;}
+  .skill-block .label{
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent);
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;
+  }
+  .skill-block ul{list-style:none;}
+  .skill-block li{
+    font-size:14px;color:var(--text-secondary);
+    padding:5px 0;
+  }
+
+  /* ---------- contact / footer ---------- */
+  .contact{
+    text-align:center;padding:110px 6vw;
+    border-top:1px solid var(--grid-line);
+  }
+  .contact h2{
+    font-family:'Archivo',sans-serif;font-weight:800;
+    font-size:clamp(2rem,5vw,3.4rem);
+    max-width:18ch;margin:0 auto 24px;
+  }
+  .contact h2 em{font-style:normal;color:var(--accent);}
+  .contact-links{
+    display:flex;justify-content:center;gap:28px;flex-wrap:wrap;
+    margin-top:36px;
+  }
+  .contact-links a{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    text-decoration:none;color:var(--text-secondary);
+    border-bottom:1px solid transparent;
+    letter-spacing:.05em;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .contact-links a:hover{color:var(--accent-cyan);border-color:var(--accent-cyan);}
+
+  footer{
+    padding:24px 6vw;
+    display:flex;justify-content:space-between;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-secondary);
+    border-top:1px solid var(--grid-line);
+    flex-wrap:wrap;gap:8px;
+  }
+
+  @media (max-width:640px){
+    header{padding:16px 5vw;}
+    nav ul{gap:18px;}
+    .section-head{flex-direction:column;align-items:flex-start;}
+    .section-head p{text-align:left;}
+    .hero-meta div{flex:1 1 130px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .proj-card{transition:none;}
+  }
+
+  /* ---------- current courses strip ---------- */
+  .courses{
+    max-width:1200px;margin:0 auto;padding:0 6vw 60px;
+  }
+  .courses-label{
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);
+    letter-spacing:.1em;margin-bottom:16px;
+  }
+  .course-tags{display:flex;flex-wrap:wrap;gap:12px;}
+  .course-tags span{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    color:var(--text-primary);
+    border:1px solid var(--border);
+    background:var(--navy-surface);
+    padding:9px 16px;border-radius:2px;
+  }
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CHASE RUBIN<span>.</span></div>
+  <nav>
+    <ul>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero crop">
+  <span class="cr-tr"></span><span class="cr-bl"></span>
+
+  <div class="hero-tag">Open to opportunities</div>
+  <h1>Hardware engineer: <em>analog circuits, IC design, embedded systems.</em></h1>
+  <p class="hero-sub">Senior EE student completing a 4+1 master's, focused on electronics hardware, analog IC design, and VLSI. I work across the stack — from schematic and layout to standard cell design and RTL.</p>
+
+  <div class="hero-meta">
+    <div>
+      <div class="label">Education</div>
+      <div class="value mono">B.S./M.S. EE, 4+1</div>
+    </div>
+    <div>
+      <div class="label">Focus</div>
+      <div class="value mono">Analog IC / VLSI</div>
+    </div>
+    <div>
+      <div class="label">Contact</div>
+      <div class="value mono">chaserubin8@gmail.com</div>
+    </div>
+    <div>
+      <div class="label">Status</div>
+      <div class="value mono">Available June 2027</div>
+    </div>
+  </div>
+</section>
+
+<div class="courses">
+  <div class="courses-label">§ 00 — CURRENT COURSES</div>
+  <div class="course-tags">
+    <span>Microwave Engineering I</span>
+    <span>Hardware Organization and Digital Design</span>
+    <span>Verification and Synthesis of Digital Systems</span>
+  </div>
+</div>
+
+<section class="section" id="work">
+  <div class="section-head">
+    <div>
+      <div class="section-num">§ 01 — SELECTED WORK</div>
+      <h2>Project archive</h2>
+    </div>
+    <p>Analog control systems, custom IC layout, and digital design — from lab to production hardware.</p>
+  </div>
+
+  <div class="projects-grid">
+
+    <div class="proj-card crop">
+      <span class="cr-tr"></span><span class="cr-bl"></span>
+      <div class="proj-topline">
+        <span class="dwg">DWG-001</span>
+        <span>AXCELIS TECHNOLOGIES · 2026</span>
+      </div>
+      <h3>Precision VCXO Temperature Controller</h3>
+      <p class="proj-desc">Designed an analog control system regulating a VCXO's temperature to ±0.2°C across a 10–40°C range using a Peltier device. Built a feedback circuit comparing thermocouple readback to setpoint, driving an H-bridge through a PWM generator and window comparators based on the amplified error signal.</p>
+      <div class="proj-dims">
+        <span>±0.2°C REG.</span><span class="arrow">→</span><span>10–40°C RANGE</span><span class="arrow">→</span><span>PELTIER + H-BRIDGE</span>
+      </div>
+      <div class="proj-stack">
+        <span>Altium Designer</span><span>LTspice</span><span>Op-amp / phase margin analysis</span><span>PWM control</span><span>Soldering</span>
+      </div>
+      <div class="proj-links">
+        <a href="project-vcxo.html">Case study →</a>
+      </div>
+    </div>
+
+    <div class="proj-card crop">
+      <span class="cr-tr"></span><span class="cr-bl"></span>
+      <div class="proj-topline">
+        <span class="dwg">DWG-002</span>
+        <span>ECE 558 · 2026</span>
+      </div>
+      <h3>4-Bit Accumulator — Custom Bitsliced Layout</h3>
+      <div class="proj-course">Intro to VLSI Design</div>
+      <p class="proj-desc">Full-custom transistor-level design of a 4-bit ripple-carry accumulator, built by abutting four hand-laid-out 1-bit bitslices. Verified through schematic simulation, DRC/LVS, parasitic extraction, and post-layout timing analysis to find the maximum clock frequency.</p>
+      <div class="proj-dims">
+        <span>0 DRC ERRORS</span><span class="arrow">→</span><span>LVS CLEAN</span><span class="arrow">→</span><span>fMAX 3.57GHz</span>
+      </div>
+      <div class="proj-stack">
+        <span>Cadence Virtuoso</span><span>HSPICE</span><span>Pegasus DRC/LVS</span><span>Custom transistor sizing</span>
+      </div>
+      <div class="proj-links">
+        <a href="project-accumulator.html">Case study →</a>
+      </div>
+    </div>
+
+    <div class="proj-card crop">
+      <span class="cr-tr"></span><span class="cr-bl"></span>
+      <div class="proj-topline">
+        <span class="dwg">DWG-003</span>
+        <span>PERSONAL PROJECT · 2025</span>
+      </div>
+      <h3>8-Bit CPU From Logic Gates</h3>
+      <p class="proj-desc">Designed and implemented a fully functional 8-bit CPU in Verilog, built up from primitive logic gates and flip-flops. Developed the ALU, registers, RAM, ROM, program counter, and control unit around a custom instruction set, with microcode and testbenches validating instruction execution and timing.</p>
+      <div class="proj-dims">
+        <span>CUSTOM ISA</span><span class="arrow">→</span><span>LOAD/STORE, BRANCH, JUMP</span>
+      </div>
+      <div class="proj-stack">
+        <span>Verilog</span><span>GTKWave</span><span>Digital design</span><span>Microarchitecture</span>
+      </div>
+      <div class="proj-links">
+        <a href="project-cpu.html">Case study →</a>
+        <a href="https://github.com/ChaseRubin" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="proj-card crop">
+      <span class="cr-tr"></span><span class="cr-bl"></span>
+      <div class="proj-topline">
+        <span class="dwg">DWG-004</span>
+        <span>PLAINS TECHNOLOGIES · 2025</span>
+      </div>
+      <h3>FlexRoE Autonomous Agricultural Rover</h3>
+      <p class="proj-desc">Assisted in the design and development of the FlexRoE rover for agricultural research. Built an STM32 control system in C with CAN bus communication to a Python interface, wired the full electrical system (relays, power supplies, motors), and designed a custom proto board for emergency-stop and power control.</p>
+      <div class="proj-dims">
+        <span>STM32 + CAN BUS</span><span class="arrow">→</span><span>E-STOP PROTO BOARD</span>
+      </div>
+      <div class="proj-stack">
+        <span>STM32</span><span>C</span><span>CAN bus</span><span>Python</span><span>Electrical wiring</span>
+      </div>
+      <div class="proj-links">
+        <a href="project-flexroe.html">Case study →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" id="skills">
+  <div class="section-head">
+    <div>
+      <div class="section-num">§ 02 — CAPABILITIES</div>
+      <h2>Tools & disciplines</h2>
+    </div>
+  </div>
+
+  <div class="skills-strip">
+    <div class="skill-block">
+      <div class="label">IC / VLSI Design</div>
+      <ul>
+        <li>Cadence Virtuoso</li>
+        <li>Standard Cell Design, Cadence Innovus</li>
+        <li>Synopsys Design Compiler</li>
+        <li>Verilog</li>
+      </ul>
+    </div>
+    <div class="skill-block">
+      <div class="label">Simulation</div>
+      <ul>
+        <li>LTspice / HSpice</li>
+        <li>Circuit design & analysis</li>
+      </ul>
+    </div>
+    <div class="skill-block">
+      <div class="label">PCB & Hardware</div>
+      <ul>
+        <li>Altium Designer</li>
+        <li>Circuit / PCB design</li>
+        <li>SolidWorks Electrical</li>
+        <li>Soldering & electrical wiring</li>
+      </ul>
+    </div>
+    <div class="skill-block">
+      <div class="label">Embedded & Software</div>
+      <ul>
+        <li>STM32</li>
+        <li>Embedded systems</li>
+        <li>Python, C</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="section-num" style="margin-bottom:14px;">§ 03 — GET IN TOUCH</div>
+  <h2>Open to internships/co-ops <em>starting June 2027.</em></h2>
+  <div class="contact-links">
+    <a href="mailto:chaserubin8@gmail.com">chaserubin8@gmail.com</a>
+    <a href="https://www.linkedin.com/in/chase-rubin" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a href="https://github.com/ChaseRubin" target="_blank" rel="noopener">GitHub ↗</a>
+    <a href="resume.pdf" target="_blank" rel="noopener">Resume (PDF) ↗</a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Chase Rubin</span>
+  <span class="mono">EE · 4+1 M.S.</span>
+</footer>
+
+</body>
+</html>

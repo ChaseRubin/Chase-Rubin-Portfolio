@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8-Bit CPU From Logic Gates — Chase Rubin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-base:#0B1E33;
+    --navy-surface:#0F2540;
+    --grid-line:#1E3A5F;
+    --grid-line-soft:#16304F;
+    --text-primary:#E8EDF2;
+    --text-secondary:#8CA3BE;
+    --accent:#FF6B35;
+    --accent-cyan:#4ECDC4;
+    --border:#2A4970;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--navy-base);
+    background-image:
+      linear-gradient(var(--grid-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line-soft) 1px, transparent 1px);
+    background-size:32px 32px;
+    color:var(--text-primary);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;}
+  ::selection{background:var(--accent);color:var(--navy-base);}
+  :focus-visible{outline:2px solid var(--accent-cyan);outline-offset:3px;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  .crop{position:relative;}
+  .crop::before,.crop::after,
+  .crop .cr-tr,.crop .cr-bl{
+    content:"";position:absolute;width:14px;height:14px;
+    border-color:var(--border);border-style:solid;opacity:.7;
+  }
+  .crop::before{top:-1px;left:-1px;border-width:1.5px 0 0 1.5px;}
+  .crop .cr-tr{top:-1px;right:-1px;border-width:1.5px 1.5px 0 0;}
+  .crop::after{bottom:-1px;left:-1px;border-width:0 0 1.5px 1.5px;}
+  .crop .cr-bl{bottom:-1px;right:-1px;border-width:0 1.5px 1.5px 0;}
+
+  header{
+    position:sticky;top:0;z-index:50;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:20px 6vw;
+    background:rgba(11,30,51,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--grid-line);
+  }
+  .logo{font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;}
+  .logo span{color:var(--accent);}
+  header a.back{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    text-decoration:none;color:var(--text-secondary);
+    letter-spacing:.08em;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;
+    transition:color .15s ease;
+  }
+  header a.back:hover{color:var(--accent-cyan);}
+
+  .case-hero{
+    max-width:900px;margin:0 auto;
+    padding:min(10vh,90px) 6vw 60px;
+  }
+  .case-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:var(--accent-cyan);letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid var(--border);padding:6px 12px;border-radius:2px;
+    margin-bottom:24px;
+  }
+  .case-tag::before{content:"";width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;}
+
+  .case-hero h1{
+    font-family:'Archivo',sans-serif;font-weight:800;
+    font-size:clamp(2rem,5vw,3.2rem);
+    line-height:1.05;letter-spacing:-0.02em;
+    max-width:20ch;
+  }
+
+  .case-meta{
+    display:flex;gap:28px;margin-top:28px;flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:var(--text-secondary);
+  }
+  .case-meta strong{color:var(--text-primary);font-weight:500;}
+
+  .case-body{max-width:900px;margin:0 auto;padding:0 6vw 100px;}
+
+  .case-section{padding:44px 0;border-top:1px solid var(--grid-line);}
+  .case-section:first-child{border-top:none;padding-top:0;}
+
+  .case-section .section-num{
+    font-family:'JetBrains Mono',monospace;color:var(--accent);
+    font-size:12px;letter-spacing:.1em;margin-bottom:10px;
+  }
+  .case-section h2{
+    font-family:'Archivo',sans-serif;font-weight:700;
+    font-size:clamp(1.3rem,2.5vw,1.7rem);
+    margin-bottom:18px;
+  }
+  .case-section p{
+    color:var(--text-secondary);font-size:15.5px;max-width:68ch;
+    margin-bottom:14px;
+  }
+  .case-section p:last-child{margin-bottom:0;}
+  .case-section strong{color:var(--text-primary);font-weight:600;}
+
+  .build-list{list-style:none;counter-reset:build;}
+  .build-list li{
+    counter-increment:build;
+    display:flex;gap:16px;padding:16px 0;
+    border-bottom:1px dashed var(--grid-line);
+    color:var(--text-secondary);font-size:15px;
+  }
+  .build-list li:last-child{border-bottom:none;}
+  .build-list li::before{
+    content:counter(build,decimal-leading-zero);
+    font-family:'JetBrains Mono',monospace;color:var(--accent-cyan);
+    font-size:13px;flex-shrink:0;padding-top:1px;
+  }
+  .build-list li strong{display:block;color:var(--text-primary);font-weight:600;margin-bottom:3px;}
+
+  .stack-row{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;
+  }
+  .stack-row span{
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:var(--text-secondary);
+    border:1px solid var(--border);
+    padding:6px 14px;border-radius:2px;
+  }
+
+  .case-footer{
+    text-align:center;padding:80px 6vw;
+    border-top:1px solid var(--grid-line);
+  }
+  .case-footer a{
+    font-family:'JetBrains Mono',monospace;font-size:13px;
+    text-decoration:none;color:var(--accent-cyan);
+    border-bottom:1px solid var(--accent-cyan);padding-bottom:2px;
+  }
+
+  @media (max-width:640px){
+    header{padding:16px 5vw;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CHASE RUBIN<span>.</span></div>
+  <a class="back" href="index.html">&larr; Back to portfolio</a>
+</header>
+
+<section class="case-hero">
+  <div class="case-tag">DWG-003 &middot; Case study</div>
+  <h1>8-Bit CPU From Logic Gates</h1>
+  <div class="case-meta">
+    <div><strong>Type</strong> &nbsp;Personal project</div>
+    <div><strong>Tools</strong> &nbsp;Verilog, GTKWave</div>
+    <div><strong>Year</strong> &nbsp;2025</div>
+  </div>
+</section>
+
+<div class="case-body">
+
+  <div class="case-section">
+    <div class="section-num">01 — OVERVIEW</div>
+    <h2>Building a CPU from the transistor level up</h2>
+    <p>This was a self-directed project to really understand computer architecture from the ground up, rather than just using the abstractions everyone takes for granted. I built a fully functional 8-bit CPU in Verilog, starting from primitive logic gates and working upward, one building block at a time, until those blocks combined into a working processor with its own instruction set.</p>
+  </div>
+
+  <div class="case-section">
+    <div class="section-num">02 — HOW IT WAS BUILT</div>
+    <h2>From gates to a working processor</h2>
+    <ul class="build-list">
+      <li>
+        <strong>Primitive gates</strong>
+        I started at the lowest level, writing AND, OR, NOT, XOR, and NAND gates directly in Verilog, then used them to build flip-flops &mdash; the basic memory element everything else in the design depends on.
+      </li>
+      <li>
+        <strong>Combinational and sequential building blocks</strong>
+        From those gates and flip-flops, I built up larger structures: multiplexers, adders, registers, and counters &mdash; the same kind of reusable blocks a real CPU is built from.
+      </li>
+      <li>
+        <strong>Functional units</strong>
+        Those building blocks came together into the CPU's major functional units: an ALU for arithmetic and logic operations, a register file, RAM and ROM for data and program storage, and a program counter to track execution.
+      </li>
+      <li>
+        <strong>Control unit and instruction set</strong>
+        I designed a custom instruction set architecture and wrote the control unit that decodes instructions and drives every other block &mdash; the piece that turns all the individual components into a single working CPU.
+      </li>
+      <li>
+        <strong>Verification</strong>
+        I wrote microcode programs and testbenches to simulate the design in GTKWave, checking that every instruction executed correctly and that timing held up across the whole datapath.
+      </li>
+    </ul>
+    <div class="stack-row">
+      <span>Verilog</span><span>GTKWave</span><span>Custom ISA</span><span>Microcode</span><span>Testbenches</span>
+    </div>
+  </div>
+
+  <div class="case-section">
+    <div class="section-num">03 — WHAT IT DOES</div>
+    <h2>A small but complete instruction set</h2>
+    <p>The finished CPU supports load/store operations, arithmetic and logic instructions, branching, and jumps &mdash; enough to run real, if simple, programs. It's a small system, but every piece of it, down to the individual gates, was built and verified by hand rather than pulled from a library.</p>
+  </div>
+
+</div>
+
+<div class="case-footer">
+  <a href="index.html">&larr; Back to project archive</a>
+</div>
+
+</body>
+</html>
